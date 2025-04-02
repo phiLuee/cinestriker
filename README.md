@@ -70,6 +70,10 @@
     User: admin@example.com/user@example.com
     Pass: same as Field User
 
+## Docker Compose (Experimental)
+
+You can also run this project using Docker Compose. Please note that the provided Docker Compose configuration is experimental and has not been extensively tested. In particular, there may be issues with Xdebug integration. Use this setup at your own risk and feel free to adjust the configuration as needed for your environment.
+
 **License**
 This project is licensed under the MIT License.
 
