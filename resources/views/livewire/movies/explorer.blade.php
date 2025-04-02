@@ -205,7 +205,7 @@ class extends Component
                     $q->with('user', 'likes')->orderByDesc('created_at')->limit(3)
             ])
             ->when(strlen($this->search) >= 3, fn ($q) =>
-                $q->where('title', 'ilike', '%' . $this->search . '%')
+                $q->where('title', 'like', '%' . $this->search . '%')
             )
             ->when(auth()->check(), fn ($q) =>
             $q->addSelect([ 
@@ -275,35 +275,10 @@ class extends Component
         $this->results = [...$this->results, ...$movies];
         $this->loading = false;
     }
-
-    public function likeReview(int $reviewId): void
-    {
-        $review = Review::find($reviewId);
-        if (!$review) {
-            $this->dispatch('toast', ['title' => 'Review nicht gefunden', 'type' => 'error']);
-            return;
-        }
-
-        $userId = auth()->id();
-        
-        // Prüfe, ob der aktuelle Nutzer den Review bereits geliked hat
-        if ($review->likes()->where('user_id', $userId)->exists()) {
-            // Like entfernen
-            $review->likes()->detach($userId);
-            $this->dispatch('toast', ['title' => 'Like entfernt', 'type' => 'info']);
-        } else {
-            // Like hinzufügen
-            $review->likes()->syncWithoutDetaching([$userId]);
-            $this->dispatch('toast', ['title' => 'Review geliked', 'type' => 'success']);
-        }
-        
-    }
 }
 ?>
 
 @php
-$renderReviewActions = fn($review) => view('components.like-button', ['review' => $review]);
-
 $grouped = [
         'Movies' => [
             ['id' => 'reviews_count_desc', 'name' => 'Anzahl Bewertungen (absteigend)'],
@@ -351,30 +326,9 @@ $grouped = [
             @foreach ($results as $movieArray)
                 @php
                     $movie = MovieData::from($movieArray); // zurück in MovieData-Objekt
+                    $actionsHtml = view('livewire.movies.partials.actions', ['movie' => $movieArray])->render();
                 @endphp
-                <x-movie-card
-                    :movie="$movie"
-                    :average="$movie->avg_rating"
-                    :reviews="$movie->topReviews"
-                    :renderReviewActions="$renderReviewActions"
-                >
-                <x-slot:actions>
-                    @if($movie->user_review_id)
-                        <x-button @click="$dispatch('editReview', { reviewId: {{ $movie->user_review_id }} })">
-                            Bewertung bearbeiten
-                        </x-button>
-                    @else
-                        <x-button @click="$dispatch('newReview', { movieId:  {{ $movie->id }} })">
-                            Bewertung schreiben
-                        </x-button>
-                    @endif
-                </x-slot:actions>
-                {{-- <x-slot:reviewActions>
-                    <x-button wire:click="likeReview()" class="text-sm">
-                        👍 <x-badge small value="12"/>
-                    </x-button>
-                </x-slot:reviewActions> --}}
-            </x-movie-card>
+                <livewire:movies.movie-card :movieArray="$movieArray" :key="'movie-card-id-' . $movieArray['id']" :actions="$actionsHtml" />
             @endforeach
             <livewire:reviews.edit />
         </div>
