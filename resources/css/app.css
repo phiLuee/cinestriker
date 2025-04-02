@@ -1,0 +1,49 @@
+@import "tailwindcss";
+
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+@source '../../storage/framework/views/*.php';
+@source '../**/*.blade.php';
+@source '../**/*.js';
+
+@theme {
+    --font-sans: "Instrument Sans", ui-sans-serif, system-ui, sans-serif,
+        "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol",
+        "Noto Color Emoji";
+}
+
+/**
+    The lines above are intact.
+    The lines below were added by maryUI installer.
+*/
+
+/** daisyUI */
+@plugin "daisyui" {
+    themes: light --default, dark --prefersdark;
+}
+
+/* maryUI */
+@source "../../vendor/robsontenorio/mary/src/View/Components/**/*.php";
+
+/* Theme toggle */
+@custom-variant dark (&:where(.dark, .dark *));
+
+.mary-table-pagination {
+    button,
+    span {
+        @apply text-xs border-none;
+    }
+
+    button {
+        @apply cursor-pointer;
+    }
+
+    span[aria-current="page"] > span {
+        @apply bg-base-content/5;
+    }
+
+    button,
+    span[aria-current="page"] > span,
+    span[aria-disabled="true"] span {
+        @apply py-1 px-2;
+    }
+}
