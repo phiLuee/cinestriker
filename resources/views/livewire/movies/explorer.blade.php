@@ -205,7 +205,7 @@ class extends Component
                     $q->with('user', 'likes')->orderByDesc('created_at')->limit(3)
             ])
             ->when(strlen($this->search) >= 3, fn ($q) =>
-                $q->where('title', 'ilike', '%' . $this->search . '%')
+                $q->where('title', 'like', '%' . $this->search . '%')
             )
             ->when(auth()->check(), fn ($q) =>
             $q->addSelect([ 
